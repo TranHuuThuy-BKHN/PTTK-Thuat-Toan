@@ -1,46 +1,59 @@
 #include<iostream>
-
+#define N 15
 using namespace std;
 
-int min(int c[], bool visited[], int n){
-	int min = INT_MAX, i = -1;
-	for(int j = 0; j < n; j++){
-		if(!visited[j] && min > c[j] && c[j] != 0){
-			min = c[j];
-			i = j;
-		}
+// 3
+// 0 5 10 10 
+// 6 0 2 9
+// 5 9 0 6
+// 1 7 4 0
+
+int tsp(int i, int S, int n, int **c, int **memory){
+	if(S == (1<<n) - 1){
+		return c[i][0];
 	}
-	return i;
+
+	int res = 1<<31 - 1;
+	if(memory[i][S] != -1){
+		return memory[i][S];
+	}
+
+	for(int j = 0; j < n; j++){
+		if((S>>j) & 1) continue;
+		
+		res = min(res, c[i][j] + tsp(j, S | (1<<j), n, c, memory));
+	}
+	
+	memory[i][S] = res;
+	return memory[i][S];
 }
+
 
 int main(){
 
-	int n, distances_min = 0, 
-		pre_city = 0, now_city = 0,
-		next_city; cin >> n;
-	n = n + 1;
-	int c[n][n];
-	bool visited[n];
-	
-	visited[0] = true;
+	int n; cin >> n;
+	n++;
+	int **c;
+	int **memory;
+
+	memory = new int*[n];
+	c = new int*[n];
+
 	for(int i = 0; i < n; i++){
-		for(int j = 0; j < n; j++)
-			cin >> c[i][j];
-	}
-	
-	while(now_city != -1){
-		next_city = min(c[now_city], visited, n);
-		if(next_city != -1){
-			distances_min += c[now_city][next_city];
-			visited[next_city] = true;
+		memory[i] = new int[1<<n];
+		for(int j = 0; j < 1<<n; j++){
+			memory[i][j] = -1;
 		}
-		pre_city = now_city;
-		now_city = next_city;
-	
 	}
 	
-	cout << distances_min + c[pre_city][0];
-	
+	for(int i = 0; i < n; i++){
+		c[i] = new int[n];
+		for(int j = 0; j < n; j++){
+			cin >> c[i][j]; 
+		}
+	}
+
+	cout << tsp(0, 1<<0, n, c, memory);
 	return 0;
 }
 

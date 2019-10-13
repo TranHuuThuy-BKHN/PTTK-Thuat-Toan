@@ -22,7 +22,9 @@ Node* find(vector<Node*> visited, Node* n){
 
 
 int bfs_waterjug(int a, int b, int c){
-	int min_height = INT_MAX;
+	int min_height = -1;
+	
+	if(c > max(a, b)) return min_height;
 	
 	vector<Node*> visited;
 	queue<Node*> queue_node;
@@ -41,8 +43,9 @@ int bfs_waterjug(int a, int b, int c){
 		
 		int x = head->x, y = head->y;
 	
-		if((x == c || y == c) && min_height > head->height){
+		if(x == c || y == c){
 			min_height = head->height;
+			break;
 		}
 		
 		int xs[] = {a, 0, 0, x + y - b, x, x, x + y, a},
@@ -66,10 +69,21 @@ int bfs_waterjug(int a, int b, int c){
 		}
 		
 	}
-	return min_height == INT_MAX ? -1 : min_height;
+	return min_height;
 }
 
 int main(){
-	cout << bfs_waterjug(3, 8, 2);
+	int T, a, b, c;
+	cin >> T;
+	int *res = new int[T];
+	
+	for(int i = 0; i < T; i++){
+		cin >> a >> b >> c;
+		res[i] = bfs_waterjug(a, b, c);
+	}
+	
+	for(int i = 0; i < T - 1; i++)
+		cout << res[i] << endl;
+	cout << res[T - 1];	
 	return 0;
 }
